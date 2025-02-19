@@ -1,0 +1,25 @@
+# .pre-commit-config.yaml
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+    -   id: trailing-whitespace  # Hapus whitespace di akhir baris
+    -   id: end-of-file-fixer    # Pastikan ada newline di akhir file
+    -   id: check-yaml           # Validasi file YAML
+    -   id: check-json           # Validasi file JSON
+    -   id: check-added-large-files  # Cek ukuran file
+
+-   repo: https://github.com/psf/black
+    rev: 23.3.0
+    hooks:
+    -   id: black  # Formatter Python
+
+-   repo: https://github.com/PyCQA/flake8
+    rev: 6.0.0
+    hooks:
+    -   id: flake8  # Linter Python
+
+-   repo: https://github.com/PyCQA/isort
+    rev: 5.12.0
+    hooks:
+    -   id: isort  # Sorting import
