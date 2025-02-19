@@ -1,0 +1,81 @@
+# .github/workflows/firmware.yml
+# Workflow khusus untuk testing firmware MicroPython
+
+name: Firmware Testing
+
+on:
+  push:
+    paths:
+      - 'firmware/**'
+    branches: [ main, development ]
+
+jobs:
+  test-firmware:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        pip install -r firmware/requirements-dev.txt
+
+    - name: Run firmware tests
+      working-directory: ./firmware
+      run: |
+        python -m pytest tests/
+
+---
+# .github/workflows/dependency-review.yml
+# Workflow untuk mengecek dependencies
+
+name: Dependency Review
+
+on:
+  pull_request:
+    paths:
+      - 'poetry.lock'
+      - 'package.json'
+      - 'package-lock.json'
+
+jobs:
+  dependency-review:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Dependency Review
+      uses: actions/dependency-review-action@v3
+
+---
+# .github/workflows/codeql.yml
+# Workflow untuk security scanning
+
+name: CodeQL Analysis
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 0 * * 0' # Run setiap minggu
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: ['python', 'javascript']
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
