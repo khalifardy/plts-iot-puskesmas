@@ -11,6 +11,9 @@
 		},
 		{
 			"path": "../../../ruang_kerja/code/TA/tugas_akhir"
+		},
+		{
+			"path": "../../personal_website"
 		}
 	],
 	"settings": {}

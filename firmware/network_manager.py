@@ -6,17 +6,19 @@ import os
 import gc
 import time
 from config import *
+from lib.umqtt.simple_mqqt import MQTTClient
 
 #status LED
 led = machine.Pin(18, machine.Pin.OUT)
 
+#wifi manager
 class NetworkManager:
     def __init__(self, config_file=CONFIG_SAVE_FILE):
         self.config_file = config_file
         self.sta_if = network.WLAN(network.STA_IF)
         self.ap_if = network.WLAN(network.AP_IF)
         self.config = self._load_config()
-        self.web_erver_socket = None
+        self.web_server_socket = None
         
     def _load_config(self):
         """Memuat Konfigurasi WIFI dari file"""
@@ -378,10 +380,68 @@ class NetworkManager:
         except:
             print("Gagal memulai thread monitoring WiFi")
 
+
+#MQQT manager
+class MQQTManager:
+    MQQT_TEMP = MQTT_TOPIC_BASE + "temperature"
+    MQQT_VOLTAGE = MQTT_TOPIC_BASE + "voltage"
+    MQQT_CURRENT = MQTT_TOPIC_BASE + "current"
+    #MESSAGE_INTERVAL = 5
+    
+    def __init__(self, client_id=MQTT_CLIENT_ID , server=MQTT_BROKER, port=MQTT_PORT, user=MQTT_USER, password=MQTT_PASSWORD):
+        self.client = MQTTClient(client_id, server, port, user, password)
+        
+    def sub_cb(self, topic, msg):
+        print((topic, msg))
+        if topic == MQTT_TOPIC_BASE + 'notification'and msg.decode('utf-8') == 'received':
+            print('ESP received hello message')
+    
+    def connect_and_subscribe(self,topic_sub=MQTT_BROKER+'notification'):
+        self.client.set_callback(self.sub_cb)
+        self.client.connect()
+        self.client.subscribe(topic_sub)
+        print(f"Connected to {MQTT_BROKER} , subscribed to {topic_sub}")
+        return self.client
+    
+    def restart_and_reconnect(self):
+        print('Failed to connect to MQTT broker. Reconnecting...')
+        time.sleep(10)
+        machine.reset()
+    
+    def publish(self, topic, msg,client,id_sensor=None):
+        #try:
+            #client = self.connect_and_subscribe()
+        #except OSError as e:
+            #print("MQTT connection failed: {e}")
+            #self.restart_and_reconnect()
+        
+        msg = str(msg).encode('utf-8')
+        
+        if topic == "Temperatur":
+            topic = self.MQQT_TEMP
+        elif topic == "Tegangan":
+            topic = self.MQQT_VOLTAGE + '/' + str(id_sensor)
+        elif topic == "Arus":
+            topic = self.MQQT_CURRENT + '/' + str(id_sensor)
+        
+        #last_message = 0
+        #while True:
+            #try:
+                #if (time.time() - last_message) > self.MESSAGE_INTERVAL:
+        client.publish(topic, msg)
+                    #last_message = time.time()
+            #except OSError as e:
+                #print("Failed to publish to MQTT: {e}")
+                #self.restart_and_reconnect() 
+                
+    
 #fungsi helper untuk penggunaan langsung
 def connect():
     nm = NetworkManager()
     return nm.auto_connect()
+def connect_mqqt():
+    mq = MQQTManager()
+    return mq.connect_and_subscribe()
 
 if __name__ =='__main__':
     network_manager = NetworkManager()
