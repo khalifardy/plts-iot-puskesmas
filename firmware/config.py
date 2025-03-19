@@ -18,7 +18,7 @@ AP_CHANNEL = 1
 AP_IP = "192.168.4.1"
 
 # Konfigurasi MQTT
-MQTT_BROKER = "broker.hivemq.com"  # Broker MQTT (ganti dengan broker Anda)
+MQTT_BROKER = "192.168.18.39"#"broker.hivemq.com"  # Broker MQTT (ganti dengan broker Anda)
 MQTT_PORT = 1883
 MQTT_USER = ""                    # Kosongkan jika tidak menggunakan autentikasi
 MQTT_PASSWORD = ""                # Kosongkan jika tidak menggunakan autentikasi
