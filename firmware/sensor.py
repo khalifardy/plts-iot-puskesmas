@@ -107,6 +107,12 @@ class Temperature:
 class PZEM_RS485:
     """Kelas untuk komunikasi dengan sensor PZEM menggunakan protokol Modbus-RTU melalui RS-485"""
     
+    # Default addresses
+    DEFAULT_ADDR = 0x01    # Alamat default pabrik (0x01)
+    SECOND_ADDR = 0x02     # Alamat kedua yang direkomendasikan (0x02)
+    BROADCAST_ADDR = 0x00  # Alamat broadcast (0x00)
+    GENERAL_ADDR = 0xF8    # Alamat umum untuk kalibrasi (0xF8)
+    
     # Register Address dari dokumentasi
     REG_VOLTAGE = 0x0000    # Tegangan (0.01 V resolution)
     REG_CURRENT = 0x0001    # Arus (0.01 A resolution)
@@ -131,17 +137,17 @@ class PZEM_RS485:
     
     
     def __init__(self, uart_id=1, tx_pin=17, rx_pin=16, de_pin=25, re_pin=26, 
-                 slave_addr=1, id_sensor=1):
+                 slave_addr=None, id_sensor=1):
         """
         Inisialisasi komunikasi RS-485 untuk sensor PZEM
         
         Args:
             uart_id: ID UART (default: 1)
-            tx_pin: Pin TX (default: 1)
-            rx_pin: Pin RX (default: 3)
+            tx_pin: Pin TX (default: 17)
+            rx_pin: Pin RX (default: 16)
             de_pin: Pin DE untuk kontrol transmisi (default: 25)
             re_pin: Pin RE untuk kontrol penerimaan (default: 26)
-            slave_addr: Alamat slave sensor (default: 1)
+            slave_addr: Alamat slave sensor (default: DEFAULT_ADDR jika None)
             id_sensor: ID sensor untuk MQTT (default: 1)
         """
         
@@ -159,8 +165,8 @@ class PZEM_RS485:
         self.re_pin = Pin(re_pin, Pin.OUT)
         self.re_pin.value(0)  # Aktifkan receiver (active low pada kebanyakan modul)
         
-        # Alamat slave sensor
-        self.slave_addr = slave_addr
+        # Alamat slave sensor, gunakan default jika tidak ditentukan
+        self.slave_addr = self.DEFAULT_ADDR if slave_addr is None else slave_addr
         
         # Gunakan client dan manager MQTT yang telah dibuat di level global
         self.client = mqtt_client
@@ -294,6 +300,45 @@ class PZEM_RS485:
         
         return crc
     
+    def change_address(self, new_addr):
+        """
+        Mengubah alamat Modbus dari sensor PZEM
+        
+        Args:
+            new_addr: Alamat baru (range: 0x01-0xF7)
+            
+        Returns:
+            bool: True jika berhasil, False jika gagal
+        """
+        # Validasi alamat
+        if new_addr < 0x01 or new_addr > 0xF7:
+            print("Alamat tidak valid. Harus dalam rentang 0x01-0xF7")
+            return False
+        
+        # Kirim perintah untuk mengubah alamat
+        response = self._send_command(
+            self.FC_WRITE_SINGLE_REGISTER, 
+            self.REG_MODBUS_ADDR, 
+            register_value=new_addr
+        )
+        
+        if response and len(response) >= 8:
+            # Periksa apakah response valid
+            reg_addr = (response[2] << 8) | response[3]
+            reg_value = (response[4] << 8) | response[5]
+            
+            if reg_addr == self.REG_MODBUS_ADDR and reg_value == new_addr:
+                print(f"Alamat berhasil diubah dari {self.slave_addr} ke {new_addr}")
+                # Update alamat pada instance saat ini
+                self.slave_addr = new_addr
+                return True
+            else:
+                print("Respons tidak sesuai yang diharapkan")
+                return False
+        else:
+            print("Gagal mengubah alamat")
+            return False
+    
     def read_voltage(self):
         """
         Baca nilai tegangan dari sensor
@@ -378,7 +423,64 @@ class PZEM_RS485:
             }
         return None
     
-    # ... metode lain tetap sama ...
+    def reset_energy(self):
+        """
+        Reset nilai energi pada sensor
+        
+        Returns:
+            bool: True jika berhasil, False jika gagal
+        """
+        packet = bytearray([self.slave_addr, self.FC_RESET_ENERGY])
+        crc = self._calculate_crc(packet)
+        packet.append(crc & 0xFF)
+        packet.append((crc >> 8) & 0xFF)
+        
+        # Set mode transmit
+        self.de_pin.value(1)
+        self.re_pin.value(1)
+        time.sleep_ms(1)
+        
+        # Kirim data
+        self.uart.write(packet)
+        
+        # Delay
+        tx_time_ms = (len(packet) * 10) / (9600 / 1000) + 5
+        time.sleep_ms(int(tx_time_ms))
+        
+        # Set mode receive
+        self.de_pin.value(0)
+        self.re_pin.value(0)
+        
+        # Tunggu respons
+        timeout = 500
+        start_time = time.ticks_ms()
+        
+        while self.uart.any() < 4:  # Respons: slave_addr(1) + func_code(1) + crc(2)
+            if time.ticks_diff(time.ticks_ms(), start_time) > timeout:
+                print("Timeout saat menunggu respons reset energi")
+                return False
+            time.sleep_ms(10)
+        
+        # Baca respons
+        response = self.uart.read()
+        
+        # Cek respons valid
+        if not response or len(response) < 4:
+            print("Respons reset energi tidak valid")
+            return False
+        
+        # Cek error
+        if (response[1] & 0x80) == 0x80:
+            print("Error saat reset energi")
+            return False
+        
+        # Cek respons sesuai
+        if response[0] != self.slave_addr or response[1] != self.FC_RESET_ENERGY:
+            print("Respons reset energi tidak sesuai")
+            return False
+        
+        print("Reset energi berhasil")
+        return True
     
     def send_data_once(self, parameter="all"):
         """
@@ -470,4 +572,3 @@ class PZEM_RS485:
             
             pin.value(0)  # LED indikator OFF
             time.sleep(1)
-

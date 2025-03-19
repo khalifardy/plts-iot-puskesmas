@@ -386,7 +386,10 @@ class MQQTManager:
     MQQT_TEMP = MQTT_TOPIC_BASE + "temperature"
     MQQT_VOLTAGE = MQTT_TOPIC_BASE + "voltage"
     MQQT_CURRENT = MQTT_TOPIC_BASE + "current"
-    #MESSAGE_INTERVAL = 5
+    MQQT_POWER = MQTT_TOPIC_BASE + "power"
+    MQQT_ENERGY = MQTT_TOPIC_BASE + "energy"
+    MQQT_ALL = MQTT_TOPIC_BASE + "all"
+    MESSAGE_INTERVAL = 5
     
     def __init__(self, client_id=MQTT_CLIENT_ID , server=MQTT_BROKER, port=MQTT_PORT, user=MQTT_USER, password=MQTT_PASSWORD):
         self.client = MQTTClient(client_id, server, port, user, password)
@@ -423,6 +426,12 @@ class MQQTManager:
             topic = self.MQQT_VOLTAGE + '/' + str(id_sensor)
         elif topic == "Arus":
             topic = self.MQQT_CURRENT + '/' + str(id_sensor)
+        elif topic == "Energy":
+            topic = self.MQQT_ENERGY + '/' + str(id_sensor)
+        elif topic == "Power":
+            topic = self.MQQT_POWER + '/' + str(id_sensor)
+        elif topic == "all":
+            topic = self.MQQT_ALL + '/' + str(id_sensor)
         
         #last_message = 0
         #while True:
