@@ -384,11 +384,11 @@ class NetworkManager:
 #MQQT manager
 class MQQTManager:
     MQQT_TEMP = MQTT_TOPIC_BASE + "temperature"
+    MQQT_PZEM = MQTT_TOPIC_BASE + "pzem"
     MQQT_VOLTAGE = MQTT_TOPIC_BASE + "voltage"
     MQQT_CURRENT = MQTT_TOPIC_BASE + "current"
     MQQT_POWER = MQTT_TOPIC_BASE + "power"
     MQQT_ENERGY = MQTT_TOPIC_BASE + "energy"
-    MQQT_ALL = MQTT_TOPIC_BASE + "all"
     MESSAGE_INTERVAL = 5
     
     def __init__(self, client_id=MQTT_CLIENT_ID , server=MQTT_BROKER, port=MQTT_PORT, user=MQTT_USER, password=MQTT_PASSWORD):
@@ -418,26 +418,57 @@ class MQQTManager:
             #print("MQTT connection failed: {e}")
             #self.restart_and_reconnect()
         
-        msg = str(msg).encode('utf-8')
+        #msg = str(msg).encode('utf-8')
         
         if topic == "Temperatur":
             topic = self.MQQT_TEMP
+            payload = {
+                "device_id": id_sensor,
+                "temperature": msg
+            }
         elif topic == "Tegangan":
-            topic = self.MQQT_VOLTAGE + '/' + str(id_sensor)
+            topic = self.MQQT_VOLTAGE
+            payload = {
+                "device_id": id_sensor,
+                "voltage": msg
+            }
         elif topic == "Arus":
             topic = self.MQQT_CURRENT + '/' + str(id_sensor)
+            payload = {
+                "device_id": id_sensor,
+                "current": msg
+            }
         elif topic == "Energy":
             topic = self.MQQT_ENERGY + '/' + str(id_sensor)
+            payload = {
+                "device_id": id_sensor,
+                "energy": msg
+            }
         elif topic == "Power":
             topic = self.MQQT_POWER + '/' + str(id_sensor)
+            payload = {
+                "device_id": id_sensor,
+                "power": msg
+            }
         elif topic == "all":
-            topic = self.MQQT_ALL + '/' + str(id_sensor)
+            topic = self.MQQT_PZEM
+            payload = {
+                "device_id": id_sensor,
+                "voltage": msg['voltage'],
+                "current": msg['current'],
+                "power": msg['power'],
+                "energy": msg['energy']
+            }
+            
+            
         
+        payload = json.dumps(payload).encode('utf-8')
+        #print("hasil encode: ",payload)
         #last_message = 0
         #while True:
             #try:
                 #if (time.time() - last_message) > self.MESSAGE_INTERVAL:
-        client.publish(topic, msg)
+        client.publish(topic, payload)
                     #last_message = time.time()
             #except OSError as e:
                 #print("Failed to publish to MQTT: {e}")
