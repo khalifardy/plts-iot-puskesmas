@@ -28,7 +28,7 @@ def setup_mqtt_connection():
 mqtt_client = setup_mqtt_connection()
 
 class Temperature:
-    def __init__(self, sensor_id=0):
+    def __init__(self, sensor_id):
         # Gunakan client dan manager MQTT yang telah dibuat di level global
         self.client = mqtt_client
         self.mqqt = mqqt_manager

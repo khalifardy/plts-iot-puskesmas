@@ -18,9 +18,9 @@ def main():
 
     
     #inisialisaasi sensor
-    temp_sensor = Temperature(1)
-    pzem1 = PZEM_RS485(id_sensor=2)
-    pzem2 = PZEM_RS485(slave_addr=0x02,id_sensor=3)
+    temp_sensor = Temperature("sensor-temp-001")
+    pzem1 = PZEM_RS485(id_sensor="sensor-pzem004t-001")
+    pzem2 = PZEM_RS485(slave_addr=0x02,id_sensor="sensor-pzem004t-002")
     
     last_temp_time = 0
     last_pzem1_time = 0
@@ -56,6 +56,11 @@ def main():
             pzem1_data_energi = pzem1.send_data_once("energy")
             if pzem1_data_energi is not None:
                 print(f"PZEM1: Energy:{pzem1_data_energi}Wh")
+            
+            pzem1_data_all = pzem1.send_data_once()
+            if pzem1_data_all is not None:
+                print(pzem1_data_all)
+                
             last_pzem1_time = current_time
         
         #Baca dan kirim data sensor PZEM2
@@ -75,7 +80,15 @@ def main():
             pzem2_data_energi = pzem2.send_data_once("energy")
             if pzem2_data_energi is not None:
                 print(f"PZEM2: Energy:{pzem2_data_energi}Wh")
+            
+            pzem2_data_all = pzem2.send_data_once()
+            if pzem2_data_all is not None:
+                print(pzem2_data_all)
+                
             last_pzem2_time = current_time
+        
+        #kirim semua data
+        
         
         time.sleep(10)
     

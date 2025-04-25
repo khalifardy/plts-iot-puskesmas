@@ -8,9 +8,22 @@ services:
     volumes:
       - mongodb_data:/data/db
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=adminpassword
-
+      - MONGO_INITDB_ROOT_USERNAME=plts_puskesmas_tanah_toraja
+      - MONGO_INITDB_ROOT_PASSWORD=2025_@Puskesmas_P1LT5
+  
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=plts_puskesmas_tanah_toraja
+      - POSTGRES_PASSWORD=2025_@Puskesmas_P1LT5
+      - POSTGRES_DB=plts_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+  
   mqtt:
     image: eclipse-mosquitto:latest
     ports:
@@ -20,7 +33,7 @@ services:
       - ./env/mosquitto/config:/mosquitto/config
       - ./env/mosquitto/data:/mosquitto/data
       - ./env/mosquitto/log:/mosquitto/log
-
+  
   backend:
     build: ./backend
     ports:
@@ -28,9 +41,11 @@ services:
     depends_on:
       - mongodb
       - mqtt
+      - postgres
     environment:
-      - MONGODB_URI=mongodb://admin:adminpassword@mongodb:27017
+      - MONGODB_URI=mongodb://plts_puskesmas_tanah_toraja:2025_%40Puskesmas_P1LT5@mongodb:27017
       - MQTT_BROKER=mqtt://mqtt:1883
+      - POSTGRES_URI=postgresql://plts_puskesmas_tanah_toraja:2025_%40Puskesmas_P1LT5@postgres:5432/plts_db
 
   frontend:
     build: ./frontend
@@ -41,3 +56,4 @@ services:
 
 volumes:
   mongodb_data:
+  postgres_data:
