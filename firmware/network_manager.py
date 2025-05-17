@@ -9,7 +9,7 @@ from config import *
 from lib.umqtt.simple_mqqt import MQTTClient
 
 #status LED
-led = machine.Pin(18, machine.Pin.OUT)
+led = machine.Pin(47, machine.Pin.OUT)
 
 #wifi manager
 class NetworkManager:
@@ -29,8 +29,8 @@ class NetworkManager:
         except (OSError, ValueError):
             #File tidak ada atau rusak, gunakan default
             return {
-                "ssid": WIFI_SSID,
-                "password": WIFI_PASSWORD
+                "ssid": WIFI_SSID_PUSKESMAS,
+                "password": WIFI_PASSWORD_PUSKESMAS
             }
     
     def _save_config(self, ssid, password):
@@ -391,7 +391,7 @@ class MQQTManager:
     MQQT_ENERGY = MQTT_TOPIC_BASE + "energy"
     MESSAGE_INTERVAL = 5
     
-    def __init__(self, client_id=MQTT_CLIENT_ID , server=MQTT_BROKER, port=MQTT_PORT, user=MQTT_USER, password=MQTT_PASSWORD):
+    def __init__(self, client_id=MQTT_CLIENT_ID , server=MQQT_BROKER_HIVE, port=MQTT_PORT, user=MQTT_USER, password=MQTT_PASSWORD):
         self.client = MQTTClient(client_id, server, port, user, password)
         
     def sub_cb(self, topic, msg):
@@ -399,11 +399,11 @@ class MQQTManager:
         if topic == MQTT_TOPIC_BASE + 'notification'and msg.decode('utf-8') == 'received':
             print('ESP received hello message')
     
-    def connect_and_subscribe(self,topic_sub=MQTT_BROKER+'notification'):
+    def connect_and_subscribe(self,topic_sub=MQQT_BROKER_HIVE+'notification'):
         self.client.set_callback(self.sub_cb)
         self.client.connect()
         self.client.subscribe(topic_sub)
-        print(f"Connected to {MQTT_BROKER} , subscribed to {topic_sub}")
+        print(f"Connected to {MQQT_BROKER_HIVE} , subscribed to {topic_sub}")
         return self.client
     
     def restart_and_reconnect(self):

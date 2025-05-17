@@ -10,6 +10,9 @@ WIFI_SSID = "Ali" # nama wifi
 WIFI_PASSWORD = "20180427" # password wifi
 WIFI_TIMEOUT = 20 #waktu untuk timeout koneksi Wifi
 
+WIFI_SSID_PUSKESMAS = "PUSKESMAS_MAKALE_UTARA"
+WIFI_PASSWORD_PUSKESMAS = "Tanyaepi"
+
 
 #Konfigurasi Access Point jika Wifi gagal
 AP_SSID = "PLTS_Puskesmas"
@@ -18,6 +21,7 @@ AP_CHANNEL = 1
 AP_IP = "192.168.4.1"
 
 # Konfigurasi MQTT
+MQQT_BROKER_HIVE = "broker.hivemq.com"
 MQTT_BROKER = "192.168.18.39"#"broker.hivemq.com"  # Broker MQTT (ganti dengan broker Anda)
 MQTT_PORT = 1883
 MQTT_USER = ""                    # Kosongkan jika tidak menggunakan autentikasi

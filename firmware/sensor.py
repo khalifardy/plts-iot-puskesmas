@@ -10,7 +10,7 @@ global mqqt_manager, mqtt_client, pin, MESSAGE_INTERVAL
 
 # Inisialisasi variabel global
 MESSAGE_INTERVAL = 5
-pin = Pin(23, Pin.OUT)
+pin = Pin(38, Pin.OUT)
 mqqt_manager = MQQTManager()
 
 # Fungsi untuk koneksi MQTT (hanya dipanggil sekali)
@@ -33,7 +33,7 @@ class Temperature:
         self.client = mqtt_client
         self.mqqt = mqqt_manager
         self.id_sensor = sensor_id
-        self.pin = Pin(19)
+        self.pin = Pin(2)
         self.ds_sensor = ds18x20.DS18X20(onewire.OneWire(self.pin))
         try:
             self.roms = self.ds_sensor.scan()

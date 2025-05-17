@@ -5,7 +5,7 @@ import time
 # Membuat koneksi MQTT global 
 global MESSAGE_INTERVAL
 
-MESSAGE_INTERVAL = 5
+MESSAGE_INTERVAL = 2
 
 def main():
     print("Starting sensor monitoring system . . .")
@@ -19,8 +19,8 @@ def main():
     
     #inisialisaasi sensor
     temp_sensor = Temperature("sensor-temp-001")
-    pzem1 = PZEM_RS485(id_sensor="sensor-pzem004t-001")
-    pzem2 = PZEM_RS485(slave_addr=0x02,id_sensor="sensor-pzem004t-002")
+    pzem1 = PZEM_RS485(id_sensor="sensor-pzem004t-001",tx_pin=43, rx_pin=44, de_pin=5, re_pin=6)
+    pzem2 = PZEM_RS485(slave_addr=0x02,id_sensor="sensor-pzem004t-002",tx_pin=43, rx_pin=44, de_pin=5,re_pin=6)
     
     last_temp_time = 0
     last_pzem1_time = 0
@@ -90,7 +90,7 @@ def main():
         #kirim semua data
         
         
-        time.sleep(10)
+        time.sleep(1)
     
     
 

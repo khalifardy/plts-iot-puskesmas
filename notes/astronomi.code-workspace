@@ -14,6 +14,12 @@
 		},
 		{
 			"path": "../../personal_website"
+		},
+		{
+			"path": "../../../latihan"
+		},
+		{
+			"path": "../../../repo/astro-computational-journey"
 		}
 	],
 	"settings": {}

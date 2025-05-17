@@ -171,3 +171,9 @@ cython_debug/
 .pypirc
 env/mosquitto/data/*
 env/mosquitto/log/*
+
+node_modules/
+.config.nodes.json
+.sessions.json
+*.backup
+.npm/

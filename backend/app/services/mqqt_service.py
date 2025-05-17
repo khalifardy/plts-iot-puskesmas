@@ -280,7 +280,7 @@ async def setup_mqtt():
         await main_loop.run_in_executor(
             thread_pool, 
             lambda: (
-                mqtt_client.connect(config.MQTT_BROKER, config.MQTT_PORT, 60),
+                mqtt_client.connect(config.MQTT_BROKER_HIVE, config.MQTT_PORT, 60),
                 mqtt_client.loop_start()
             )
         )

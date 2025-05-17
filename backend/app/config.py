@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     POSTGRES_DB: str = "plts"
     #MQQT Configuration
     MQTT_BROKER: str = "192.168.18.39"
+    MQTT_BROKER_HIVE: str = "broker.hivemq.com"
     MQTT_PORT: int = 1883
     MQTT_USER:str = ""                    
     MQTT_PASSWORD:str = ""                  
