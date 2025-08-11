@@ -76,7 +76,7 @@ async def init_database():
         # convert to hypertable if TimescaleDB is enabled
         try:
             await conn.execute(
-                "SELECT dbo.create_hypertable('dbo.temperature_sensor_readings', 'time', if_not_exists:=TRUE);"
+                "SELECT create_hypertable('dbo.temperature_sensor_readings', 'time', if_not_exists => TRUE);"
             )
             logger.info("Hypertable created for temperature sensor readings.")
         except Exception as e:
@@ -101,7 +101,7 @@ async def init_database():
         # convert to hypertable if TimescaleDB is enabled
         try:
             await conn.execute(
-                "SELECT dbo.create_hypertable('dbo.pzem004t_sensor_readings', 'time', if_not_exists:=TRUE);"
+                "SELECT create_hypertable('dbo.pzem004t_sensor_readings', 'time', if_not_exists => TRUE);"
             )
             logger.info("Hypertable created for PZEM004T sensor readings.")
         except Exception as e:
