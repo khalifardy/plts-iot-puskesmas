@@ -18,7 +18,7 @@ async def init_database():
     # connect to default postgresql database
     conn = await asyncpg.connect(
         user=os.getenv("POSTGRES_USER", "postgres"),
-        password=os.getenv("POSTGRES_PASSWORD", 'password_baru'),
+        password=os.getenv("POSTGRES_PASSWORD", 'password'),
         host=os.getenv("POSTGRES_HOST", 'localhost'),
         port=os.getenv("POSTGRES_PORT", 5432),
         database="postgres",
