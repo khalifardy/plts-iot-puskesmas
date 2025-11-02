@@ -15,25 +15,6 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 async def init_database():
-    # connect to default postgresql database
-    conn = await asyncpg.connect(
-        user=os.getenv("POSTGRES_USER", "postgres"),
-        password=os.getenv("POSTGRES_PASSWORD", 'postgres'),
-        host=os.getenv("POSTGRES_HOST", 'localhost'),
-        port=os.getenv("POSTGRES_PORT", 5432),
-        database="postgres",
-    )
-    
-    # buat database jika belum ada
-    db_name = os.getenv("POSTGRES_DB", "plts")
-    
-    try:
-        await conn.execute(f"CREATE DATABASE {db_name}")
-        logger.info(f"Database {db_name} created successfully.")
-    except asyncpg.exceptions.DuplicateDatabaseError:
-        logger.info(f"Database {db_name} already exists.")
-    finally:
-        await conn.close()
     
     # connect to the new database
     conn = await asyncpg.connect(
@@ -41,7 +22,7 @@ async def init_database():
         password=os.getenv("POSTGRES_PASSWORD", 'QbzpW6ZrbA00fL7Orc3fy1rCknp0CL9h'),
         host=os.getenv("POSTGRES_HOST", "localhost"),
         port=os.getenv("POSTGRES_PORT", 5432),
-        database=db_name,
+        database='plts',
     )
     
     # Tambahkan ini setelah koneksi dan sebelum membuat tabel
