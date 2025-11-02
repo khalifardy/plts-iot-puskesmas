@@ -1,7 +1,7 @@
 import asyncio
 import asyncpg
 import os
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 import logging
 
 # setup logging
@@ -12,7 +12,7 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-load_dotenv()
+#load_dotenv()
 
 async def init_database():
     
