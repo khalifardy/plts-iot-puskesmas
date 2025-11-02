@@ -3,9 +3,9 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     #Database COnfiguration
-    DATABASE_URL: str = "postgresql://plts_puskesmas_tanah_toraja:qwerty12345@localhost/plts"
+    DATABASE_URL: str = "postgresql://plts_puskesmas_tanah_toraja:1eMV1etFfDoofZviIGjEcBnHtyn6Jzad@localhost/plts"
     POSTGRES_USER: str = "plts_puskesmas_tanah_toraja"
-    POSTGRES_PASSWORD: str = "qwerty12345"
+    POSTGRES_PASSWORD: str = "1eMV1etFfDoofZviIGjEcBnHtyn6Jzad"
     POSTGRES_SERVER: str = "localhost"
     POSTGRES_PORT: int = 5432
     POSTGRES_DB: str = "plts"
