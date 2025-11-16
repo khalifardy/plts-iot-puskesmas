@@ -10,8 +10,8 @@ WIFI_SSID = "Ali" # nama wifi
 WIFI_PASSWORD = "20180427" # password wifi
 WIFI_TIMEOUT = 20 #waktu untuk timeout koneksi Wifi
 
-WIFI_SSID_PUSKESMAS = "PUSKESMAS_MAKALE_UTARA"
-WIFI_PASSWORD_PUSKESMAS = "Tanyaepi"
+WIFI_SSID_PUSKESMAS = "tselhome-2253" #"PUSKESMAS_MAKALE_UTARA"
+WIFI_PASSWORD_PUSKESMAS = "HE98EHMHRL5"
 
 
 #Konfigurasi Access Point jika Wifi gagal
